@@ -61,8 +61,8 @@ The final stitched panorama is saved in `./output/Part_2/panorama_output.jpg`.
 
 ### Clone the Repository
 ```bash
-git clone https://github.com/your-username/coin-detection-image-stitching.git
-cd coin-detection-image-stitching
+git clone https://github.com/aloofzebra03/VR_Assignment1_Aryan_IMT2022036.git
+cd VR_Assignment1_Aryan_IMT2022036
 ```
 
 ### Run the Scripts
