@@ -70,12 +70,4 @@ python Part_1.py
 python Part_2.py
 ```
 
-## Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-
-## License
-This project is open-source and available for modification and distribution under the MIT License.
-
-## Contact
-For any inquiries, reach out at [your-email@example.com](mailto:your-email@example.com).
 
