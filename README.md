@@ -28,6 +28,7 @@ Ensure you have an input image located at `./input/Part_1/coins.jpeg` and then r
 ```bash
 python Part_1.py
 ```
+![Uploading 1.jpg…]()
 
 ### Outputs
 Processed images are saved in `./output/Part_1/`, including:
