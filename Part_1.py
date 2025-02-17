@@ -4,7 +4,7 @@ import numpy as np
 import os
 
 # Create output directory
-output_dir = "./output/Part_2"
+output_dir = "./output/Part_1"
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 
