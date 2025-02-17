@@ -35,6 +35,7 @@ Processed images are saved in `./output/Part_1/`, including:
 - `count_coins.png`: Image with detected circles.
 - `segmented_image.png`: Image with segmented coins.
 - `extracted_coins.png`: Extracted individual coins.
+- `coin_1.png`, `coin_2.png`, ...: Individual extracted coin images.
 
 ## Part 2: Image Stitching
 
@@ -69,5 +70,4 @@ cd coin-detection-image-stitching
 python Part_1.py
 python Part_2.py
 ```
-
 
