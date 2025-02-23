@@ -11,7 +11,6 @@ if not os.path.exists(output_dir):
 plt.rcParams.update({'font.size': 20})
 
 def show_image(title, image, cmap=None):
-    """Display an image with a title using matplotlib."""
     plt.figure(figsize=(8, 6))
     if cmap != None:
         plt.imshow(image, cmap=cmap)
@@ -22,7 +21,6 @@ def show_image(title, image, cmap=None):
     plt.show()
 
 def find_edges(input_image_path):
-    """Find edges in the input image using CLAHE, Gaussian blur, and Canny edge detection."""
     frame = cv2.imread(input_image_path)
     if frame is None:
         print("Could not open image")
@@ -46,7 +44,6 @@ def find_edges(input_image_path):
     return frame_rgb, blurred_result, canny_edges
 
 def count_coins_hough(image_path):
-    """Count the number of coins using Hough Circle Transform and display detected circles."""
     image = cv2.imread(image_path)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     gray_blurred = cv2.medianBlur(gray, 5)
@@ -65,13 +62,18 @@ def count_coins_hough(image_path):
             cv2.circle(detected_image, (i[0], i[1]), 2, (0, 0, 255), 3)  # Center marker
     
     detected_display = cv2.cvtColor(detected_image, cv2.COLOR_BGR2RGB)
-    cv2.imwrite(f"{output_dir}/count_coins.png", detected_image)
-    show_image(f"Detected Circles ({coin_count})", detected_display)
+    # cv2.imwrite(f"{output_dir}/count_coins.png", detected_image)
+    plt.figure(figsize=(8, 8))
+    plt.imshow(detected_display)
+    plt.axis("off") 
+    plt.title(f"Detected Circles ({coin_count})", fontsize=22)
+    plt.savefig(f"{output_dir}/count_coins.png", bbox_inches='tight', dpi=300)
+    plt.show()
+    # show_image(f"Detected Circles ({coin_count})", detected_display)
     print(f"Detected number of coins using Hough Circles: {coin_count}")
     return coin_count
 
 def segment_coins(image_path):
-    """Segment coins from the image using morphological operations and watershed algorithm."""
     image = cv2.imread(image_path)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     
@@ -115,31 +117,62 @@ def segment_coins(image_path):
     return segmented_display, markers
 
 def extract_coins(image_path, markers):
-    """Extract individual coins from the segmented image, save and display them."""
     image = cv2.imread(image_path)
     extracted = []
     extracted_display = image.copy()
+    coin_data = []  # Store (x, y, w, h, coin_img) for sorting
     
-    count = 1  # Start naming coins from 1
     for label in np.unique(markers):
         if label <= 1:
             continue
         mask = np.uint8(markers == label) * 255
         contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        
         for contour in contours:
             x, y, w, h = cv2.boundingRect(contour)
             coin = image[y:y+h, x:x+w]
             coin_rgb = cv2.cvtColor(coin, cv2.COLOR_BGR2RGB)
-            extracted.append(coin_rgb)
-            coin_filename = f"{output_dir}/coin_{count}.png"
-            cv2.imwrite(coin_filename, coin)
-            cv2.rectangle(extracted_display, (x, y), (x+w, y+h), (0, 255, 0), 2)
-            show_image(f"Extracted Coin {count}", coin_rgb)
-            count += 1
+            coin_data.append((x, y, w, h, coin_rgb))  # Store for sorting
+
+    # Sort coins by their x-coordinate (left to right)
+    coin_data.sort(key=lambda c: c[0])
+
+    labeled_positions = []
     
-    cv2.imwrite(f"{output_dir}/extracted_coins.png", extracted_display)
+    for count, (x, y, w, h, coin_rgb) in enumerate(coin_data, start=1):
+        extracted.append(coin_rgb)
+        
+        # Save each extracted coin with correct numbering
+        coin_filename = f"{output_dir}/coin_{count}.png"
+        cv2.imwrite(coin_filename, cv2.cvtColor(coin_rgb, cv2.COLOR_RGB2BGR))
+
+        # Draw rectangle around extracted coin
+        cv2.rectangle(extracted_display, (x, y), (x+w, y+h), (0, 255, 0), 2)
+
+        # Store positions for labeling (slightly below the coin)
+        labeled_positions.append((x + w // 2, y + h + 10, count))
+
+        # Show extracted coin with Matplotlib
+        show_image(f"Extracted Coin {count}", coin_rgb)
+
+    # Save the extracted coins image
+    # cv2.imwrite(f"{output_dir}/extracted_coins.png", extracted_display)
     extracted_display = cv2.cvtColor(extracted_display, cv2.COLOR_BGR2RGB)
-    show_image("All Extracted Coins", extracted_display)
+
+    # Display using Matplotlib with Labels
+    plt.figure(figsize=(8, 8))
+    plt.imshow(extracted_display)
+    plt.axis("off")
+    plt.title("All Extracted Coins", fontsize=22)
+
+    # Add labels in left-to-right order
+    for (cx, cy, num) in labeled_positions:
+        plt.text(cx, cy, f"Coin {num}", color='black', fontsize=16, ha='center', va='top', fontweight='bold')
+
+    labeled_output_path = f"{output_dir}/extracted_coins.png"
+    plt.savefig(labeled_output_path, bbox_inches='tight', dpi=300)
+    plt.show()
+
     return extracted
 # Define input image path
 image_path = './input/Part_1/coins.jpeg'
@@ -155,5 +188,3 @@ extracted_coins = extract_coins(image_path, markers)
 
 # Count coins using Hough Circle Transform
 coin_count_hough = count_coins_hough(image_path)
-
-print("Processing completed. Images saved in ./output/Part_2")

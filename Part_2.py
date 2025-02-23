@@ -7,7 +7,6 @@ plt.rcParams.update({'font.size': 20})
 
 
 def compute_perspective_transform(pts1, pts2, correspondences):
-    """Calculates the transformation matrix using keypoint correspondences."""
     if len(correspondences) < 4:
         raise ValueError("Insufficient keypoint matches!")
     
@@ -21,7 +20,6 @@ def compute_perspective_transform(pts1, pts2, correspondences):
 
 
 def crop_black_regions(img):
-    """Trims black edges from the composited image by detecting non-black regions."""
     gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     _, mask = cv2.threshold(gray_img, 1, 255, cv2.THRESH_BINARY)
     non_black_pixels = cv2.findNonZero(mask)
@@ -30,7 +28,6 @@ def crop_black_regions(img):
 
 
 def merge_images(img1, img2, homography):
-    """Merges two images using perspective transformation and smooth blending."""
     h1, w1 = img1.shape[:2]
     h2, w2 = img2.shape[:2]
 
@@ -73,7 +70,6 @@ def merge_images(img1, img2, homography):
 
 
 def concatenate_with_spacing(img_list, gap=100):
-    """Arranges images side by side with padding."""
     h, w, _ = img_list[0].shape
     gap_space = np.zeros((h, gap, 3), dtype=np.uint8)
     gap_space.fill(255)
@@ -121,6 +117,9 @@ def visualize_panorama(keypoint_visuals, stitched_final):
     axes[0].set_title("Original Images with Keypoints")
     axes[0].axis("off")
 
+    cv2.imwrite("./output/Part_2/keypoints_detected.jpg", cv2.cvtColor(original_with_spacing, cv2.COLOR_BGR2RGB))
+
+
     axes[1].imshow(stitched_rgb)
     axes[1].set_title("Final Stitched Image")
     axes[1].axis("off")
@@ -151,7 +150,6 @@ def create_panorama(img_sequence):
 
     # Save the final stitched panorama
     cv2.imwrite("./output/Part_2/panorama_output.jpg", stitched_final)
-    # cv2.imwrite("./output/Part_2/panorama_output.jpg", stitched_final)
 
 
     # Visualize the results
@@ -159,8 +157,8 @@ def create_panorama(img_sequence):
 
 img_sequence = []
 for idx in range(1, 4):
-    # img = cv2.imread(f"./input/Part_2/{idx}.jpg")
-    img = cv2.imread(f"./{idx}.jpg")
+    img = cv2.imread(f"./input/Part_2/{idx}.jpg")
+    # img = cv2.imread(f"./{idx}.jpg")
     if img is None:
         raise FileNotFoundError(f"Image {idx}.jpg not found.")
     img = cv2.resize(img, (800, 600))
