@@ -10,7 +10,7 @@ This project contains two parts:
 Ensure you have the following dependencies installed before running the scripts:
 
 ```bash
-pip install opencv-python numpy matplotlib scipy scikit-image
+pip install opencv-python numpy matplotlib 
 ```
 
 ## Part 1: Coin Detection and Segmentation
